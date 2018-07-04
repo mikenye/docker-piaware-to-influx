@@ -7,5 +7,5 @@ RUN pip3 install requests
 ADD ./init /init
 ADD ./piaware2influx.py /piaware2influx.py
 
-ENTRYPOINT [ "/init" ]
+CMD [ "/init" ]
 
