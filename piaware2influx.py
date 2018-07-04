@@ -7,14 +7,20 @@ import socket
 import datetime
 import time
 import argparse
+import requests
 
 
 class ADSB_Processor(object):
-	def __init__(self):
+	def __init__(self, telegraf_url):
 		self._clear_buffer()
 		self.database = {}
 		self.messages_processed = 0
 		self.points_sent = 0
+		self.telegraf_url = telegraf_url
+
+	def send_line_protocol(line_protocol):
+		r = requests.post(self.telegraf_url, data=line_protocol)
+		print(r.status_code)
 
 	def log(self, text):
 		print("Piaware2Influx: %s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
@@ -299,8 +305,7 @@ class ADSB_Processor(object):
 
 									# send line protocol
 									if valid:
-										#print(repr(line_protocol))
-										pass
+										self.send_line_protocol(line_protocol)
 
 								# remove entries we've already sent
 								self.database[message[4]]['data_to_send'] = list()
@@ -334,8 +339,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Read dump1090 TCP BaseStation data, convert to InfluxDB line protocol, and send to InfluxDB')
 	parser.add_argument('-ds', '--dump1090-server', default="127.0.0.1", help="Host/IP for dump1090 [127.0.0.1]")
 	parser.add_argument('-dp', '--dump1090-port', default="30003", help="Port for dump1090 TCP BaseStation data [30003]")
-	parser.add_argument('-is', '--influxdb-server', default="127.0.0.1", help="Host/IP for InfluxDB [127.0.0.1]")
-	parser.add_argument('-ip', '--influxdb-port', default="8186", help="Port for InfluxDB [8086]")
+	parser.add_argument('-tu', '--telegraf-url', default="http://127.0.0.1:8186/", help="URL for Telegraf inputs.http_listener [http://127.0.0.1:8186/]")
 	args = parser.parse_args()
 
 	print(args)
@@ -343,7 +347,7 @@ if __name__ == "__main__":
 	HOST = args.dump1090_server
 	PORT = int(args.dump1090_port)
 
-	D = ADSB_Processor()
+	D = ADSB_Processor(args.telegraf_url)
 
 	s = setup_socket(HOST, PORT)
 
