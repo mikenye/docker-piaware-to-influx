@@ -305,7 +305,7 @@ class ADSB_Processor(object):
 									
 									# add timestamp
 									line_protocol += " "
-									line_protocol += str(time.mktime(data_to_send['datetime'].timetuple()))
+									line_protocol += str(int(time.mktime(data_to_send['datetime'].timetuple())))
 									#line_protocol += "000000000" # sec -> ms -> µs -> ns
 									#line_protocol += str(time.mktime(data_to_send['datetime'].timetuple()) * 1000 * 1000 * 1000) # sec -> ms -> µs -> ns
 
