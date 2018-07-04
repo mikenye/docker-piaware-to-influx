@@ -203,7 +203,6 @@ class ADSB_Processor(object):
 							self.database[message[4]]['data_to_send'].append({'current_altitude': message[11],
 								                                              'current_latitude': message[14],
 								                                              'current_longitude': message[15],
-								                                              'mt': '3',
 								                                              'datetime': msgdt,
 								                                             })
 							self.log_aircraft(message[4], "Alt: %s, Lat: %s, Long: %s" % (message[11], message[14], message[15]))
@@ -213,7 +212,6 @@ class ADSB_Processor(object):
 							self.database[message[4]]['data_to_send'].append({'current_groundspeed': message[12],
 								                                              'current_track': message[13],
 								                                              'current_verticalrate': message[16],
-								                                              'mt': '4',
 								                                              'datetime': msgdt,
 								                                             })
 							self.log_aircraft(message[4], "GroundSpeed: %s, Track: %s, VerticalRate: %s" % (message[12], message[13], message[16]))
@@ -226,7 +224,6 @@ class ADSB_Processor(object):
 						elif message[1] == '5' and message[11] != '':
 							self.database[message[4]]['data_to_send'].append({'current_altitude': message[11],
 																			  'datetime': msgdt,
-																			  'mt': '5',
 								                                             })
 							self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
@@ -237,7 +234,6 @@ class ADSB_Processor(object):
 						elif message[1] == '6' and message[11] != '':
 							self.database[message[4]]['data_to_send'].append({'current_altitude': message[11],
 																			  'datetime': msgdt,
-																			  'mt': '6',
 								                                             })
 							self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
@@ -247,7 +243,6 @@ class ADSB_Processor(object):
 						elif message[1] == '7' and message[11] != '':
 							self.database[message[4]]['data_to_send'].append({'current_altitude': message[11],
 																			  'datetime': msgdt,
-																			  'mt': '7',
 								                                             })
 							self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
