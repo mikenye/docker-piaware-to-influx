@@ -19,8 +19,12 @@ class ADSB_Processor(object):
 		self.telegraf_url = telegraf_url
 
 	def send_line_protocol(self, line_protocol):
-		r = requests.post(self.telegraf_url, data=line_protocol)
-		print(r.status_code)
+		try:
+			r = requests.post(self.telegraf_url, data=line_protocol)
+		except:
+			log("ERROR: could not submit line protocol! '%s'" % (repr(line_protocol)))
+		if r.status_code != 204:
+			log("ERROR: telegraf status code was '%s', expected '204'! " % (r.status_code))
 
 	def log(self, text):
 		print("Piaware2Influx: %s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
