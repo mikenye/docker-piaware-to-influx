@@ -43,7 +43,7 @@ class ADSB_Processor(object):
 		else:
 			# if we need to back off (ie: log once per second)
 			if not no_backoff:
-				cutoff = datetime.datetime.now() - datetime.timedelta(seconds=1)
+				cutoff = datetime.datetime.now() - datetime.timedelta(seconds=60)
 				if self.database[hexident]['lastlogged'] > cutoff:
 					logstuff = False
 

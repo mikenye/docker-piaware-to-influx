@@ -30,7 +30,7 @@ cat << EOF > /etc/telegraf/telegraf.conf
   flush_interval = "10s"
   flush_jitter = "0s"
   precision = ""
-  debug = true
+  debug = false
   quiet = false
   logfile = ""
   hostname = ""
@@ -59,4 +59,5 @@ EOF
 
 # Start telegraf
 telegraf --config /etc/telegraf/telegraf.conf &
+sleep 1
 python3 /piaware2influx.py -ds $DUMP1090_HOST
