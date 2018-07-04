@@ -42,5 +42,4 @@ cat << EOF >> /etc/telegraf/telegraf.conf
 EOF
 
 # Start telegraf
-telegraf --config /etc/telegraf/telegraf.conf --test
 telegraf --config /etc/telegraf/telegraf.conf
