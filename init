@@ -9,6 +9,14 @@ if [ -z ${INFLUXDB_URL+x} ];
     echo "INFLUXDB_URL is set to '$INFLUXDB_URL'"
 fi
 
+if [ -z ${DUMP1090_HOST+x} ]; 
+  then
+    echo "DUMP1090_HOST is unset, please set!"
+    exit 1
+  else
+    echo "DUMP1090_HOST is set to '$DUMP1090_HOST'"
+fi
+
 # Build telegraf config
 cat << EOF > /etc/telegraf/telegraf.conf
 [global_tags]
@@ -50,4 +58,5 @@ cat << EOF >> /etc/telegraf/telegraf.conf
 EOF
 
 # Start telegraf
-telegraf --config /etc/telegraf/telegraf.conf
+telegraf --config /etc/telegraf/telegraf.conf &
+python3 /piaware2influx.py -ds $DUMP1090_HOST

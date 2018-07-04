@@ -335,7 +335,7 @@ if __name__ == "__main__":
 	parser.add_argument('-ds', '--dump1090-server', default="127.0.0.1", help="Host/IP for dump1090 [127.0.0.1]")
 	parser.add_argument('-dp', '--dump1090-port', default="30003", help="Port for dump1090 TCP BaseStation data [30003]")
 	parser.add_argument('-is', '--influxdb-server', default="127.0.0.1", help="Host/IP for InfluxDB [127.0.0.1]")
-	parser.add_argument('-ip', '--influxdb-port', default="8086", help="Port for InfluxDB [8086]")
+	parser.add_argument('-ip', '--influxdb-port', default="8186", help="Port for InfluxDB [8086]")
 	args = parser.parse_args()
 
 	print(args)
