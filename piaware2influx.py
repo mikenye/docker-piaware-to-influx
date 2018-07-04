@@ -18,7 +18,7 @@ class ADSB_Processor(object):
 		self.points_sent = 0
 		self.telegraf_url = telegraf_url
 
-	def send_line_protocol(line_protocol):
+	def send_line_protocol(self, line_protocol):
 		r = requests.post(self.telegraf_url, data=line_protocol)
 		print(r.status_code)
 
