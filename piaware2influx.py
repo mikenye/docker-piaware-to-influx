@@ -339,7 +339,7 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description='Read dump1090 TCP BaseStation data, convert to InfluxDB line protocol, and send to InfluxDB')
 	parser.add_argument('-ds', '--dump1090-server', default="127.0.0.1", help="Host/IP for dump1090 [127.0.0.1]")
 	parser.add_argument('-dp', '--dump1090-port', default="30003", help="Port for dump1090 TCP BaseStation data [30003]")
-	parser.add_argument('-tu', '--telegraf-url', default="http://127.0.0.1:8186/", help="URL for Telegraf inputs.http_listener [http://127.0.0.1:8186/]")
+	parser.add_argument('-tu', '--telegraf-url', default="http://127.0.0.1:8186/write", help="URL for Telegraf inputs.http_listener [http://127.0.0.1:8186/]")
 	args = parser.parse_args()
 
 	print(args)
