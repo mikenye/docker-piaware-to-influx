@@ -1,5 +1,7 @@
+#!/bin/bash
 
 
+# Build telegraf config
 echo """[global_tags]
 
 [agent]
@@ -18,7 +20,14 @@ echo """[global_tags]
   omit_hostname = true
 
 [[outputs.influxdb]]
-  urls = ["http://192.168.69.35:8086"]
+  urls = [\"""" > /etc/telegraf/telegraf.conf
+
+# Add InfluxDB URL
+echo $INFLUXDB_URL >> /etc/telegraf/telegraf.conf
+
+# Finish config
+echo
+  """\"]
   database = "piaware"
   skip_database_creation = false
   timeout = "5s"
@@ -28,4 +37,8 @@ echo """[global_tags]
   service_address = ":8186"
   read_timeout = "10s"
   write_timeout = "10s"
-"""
+""" >> /etc/telegraf/telegraf.conf
+
+# Start telegraf
+telegraf --config /etc/telegraf/telegraf.conf --test
+telegraf --config /etc/telegraf/telegraf.conf

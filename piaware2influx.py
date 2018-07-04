@@ -17,7 +17,7 @@ class ADSB_Processor(object):
 		self.points_sent = 0
 
 	def log(self, text):
-		print("%s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
+		print("Piaware2Influx: %s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
 
 	def log_aircraft(self, hexident, text, no_backoff=False):
 		logstuff = True
