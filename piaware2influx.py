@@ -21,6 +21,7 @@ class ADSB_Processor(object):
 	def send_line_protocol(self, line_protocol):
 		try:
 			r = requests.post(self.telegraf_url, data=line_protocol)
+			self.points_sent += 1
 		except:
 			log("ERROR: could not submit line protocol! '%s'" % (repr(line_protocol)))
 		if r.status_code != 204:
