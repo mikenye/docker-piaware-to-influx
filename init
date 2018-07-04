@@ -1,6 +1,14 @@
 #!/bin/bash
 
 
+if [ -z ${INFLUXDB_URL+x} ]; 
+  then
+    echo "INFLUXDB_URL is unset, please set!"
+    exit 1
+  else
+    echo "INFLUXDB_URL is set to '$INFLUXDB_URL'"
+fi
+
 # Build telegraf config
 cat << EOF > /etc/telegraf/telegraf.conf
 [global_tags]
