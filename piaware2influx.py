@@ -19,6 +19,7 @@ class ADSB_Processor(object):
 		self.telegraf_url = telegraf_url
 
 	def send_line_protocol(self, line_protocol):
+		url = "%s?precision=s"
 		try:
 			r = requests.post(self.telegraf_url, data=line_protocol)
 			self.points_sent += 1
@@ -304,8 +305,8 @@ class ADSB_Processor(object):
 									
 									# add timestamp
 									line_protocol += " "
-									line_protocol += str(time.mktime(data_to_send['datetime'].timetuple())).split('.')[0]
-									line_protocol += "000000000" # sec -> ms -> µs -> ns
+									line_protocol += str(time.mktime(data_to_send['datetime'].timetuple()))
+									#line_protocol += "000000000" # sec -> ms -> µs -> ns
 									#line_protocol += str(time.mktime(data_to_send['datetime'].timetuple()) * 1000 * 1000 * 1000) # sec -> ms -> µs -> ns
 
 									# send line protocol
