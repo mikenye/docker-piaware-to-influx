@@ -61,5 +61,6 @@ As an example, adding a table with the following query:
 
 Will give a result such as this:
 
+![example Grafana table showing PiAware data](https://github.com/mikenye/docker-piaware-to-influx/raw/master/example_table_most_recent_squawks.png "Example Grafana table showing PiAware data")
 
 
