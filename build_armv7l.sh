@@ -1,3 +1,6 @@
 #!/bin/sh
 
-docker build -f Dockerfile -t mikenye/piaware-to-influx:latest-arm32v7 .
+VERSION=gitcommit_9825ca7
+IMAGE=mikenye/piaware-to-influx
+
+docker build -f Dockerfile -t ${IMAGE}:${VERSION} .
