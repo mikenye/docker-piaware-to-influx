@@ -129,7 +129,10 @@ class ADSB_Processor(object):
 							self.database[message[4]] = dict()
 							self.database[message[4]]['hexident'] = message[4].strip()
 							self.database[message[4]]['data_to_send'] = list()
-							msgdtstring = "%sT%s" % (message[6],message[7])
+							# Note, the [0:15] below is to prevent issues where timestamps have a higher
+							# resolution than what python can handle. The %f accepts from 1 to 6 digits.
+							# Some platforms are sending more than 6 digits, so this sets a limit.
+							msgdtstring = "%sT%s" % (message[6],message[7][0:15])
 							msgdt = datetime.datetime.strptime(msgdtstring, '%Y/%m/%dT%H:%M:%S.%f')
 							self.database[message[4]]['lastseen'] = msgdt
 							self.database[message[4]]['callsign'] = message[10].strip()
@@ -149,7 +152,10 @@ class ADSB_Processor(object):
 
 						# If it does exist, then we update the values
 						else:
-							msgdtstring = "%sT%s" % (message[6],message[7])
+							# Note, the [0:15] below is to prevent issues where timestamps have a higher
+							# resolution than what python can handle. The %f accepts from 1 to 6 digits.
+							# Some platforms are sending more than 6 digits, so this sets a limit.
+							msgdtstring = "%sT%s" % (message[6],message[7][0:15])
 							msgdt = datetime.datetime.strptime(msgdtstring, '%Y/%m/%dT%H:%M:%S.%f')
 							self.database[message[4]]['lastseen'] = msgdt
 
