@@ -38,7 +38,7 @@ cat << EOF > /etc/telegraf/telegraf.conf
   flush_interval = "10s"
   flush_jitter = "0s"
   precision = ""
-  debug = false
+  debug = true
   quiet = false
   logfile = ""
   hostname = ""
