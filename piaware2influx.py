@@ -29,7 +29,7 @@ class ADSB_Processor(object):
             self.log("ERROR: telegraf status code was '%s', expected '204'! " % (r.status_code))
 
     def log(self, text):
-        print("Piaware2Influx: %s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
+        print("%s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
 
     def log_aircraft(self, hexident, text, no_backoff=False):
         logstuff = True

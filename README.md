@@ -17,6 +17,7 @@ docker run \
  --restart=always \
  -e INFLUXDB_URL="http://<influxdb_host>:<influxdb_port>" \
  -e DUMP1090_HOST="<dump1090_host>" \
+ -e TZ="<your_timezone>" \
  mikenye/piaware-to-influx
 ```
 
@@ -29,7 +30,8 @@ docker run \
   --restart=always \
   -e INFLUXDB_URL="http://192.168.3.84:8086" \
   -e DUMP1090_HOST="192.168.3.85" \
-  docker-piaware-to-influx
+  -e TZ="Australia/Perth" \
+  mikenye/piaware-to-influx
 ```
 
 The container will attempt to connect to the dump1090 instance on port 30003 to receive ADS-B data.
@@ -42,6 +44,7 @@ There are a series of available variables you are required to set:
 
 * `INFLUXDB_URL` - The URL of your InfluxDB instance, eg: ```http://192.168.1.10:8086```
 * `DUMP1090_HOST` - The IP/hostname of your dump1090 instance, eg: ```192.168.1.11```. No port required, it will use 30003 by default.
+* `TZ` - Your local timezone (optional)
 
 ## Ports
 
