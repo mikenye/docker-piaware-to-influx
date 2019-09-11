@@ -98,15 +98,15 @@ class ADSB_Processor(object):
                 new_message = ""
 
     def clean_database(self):
-                hexidents_to_remove = set()
+        hexidents_to_remove = set()
         for hexident in self.database:
             # work out what was 15 mins ago
             cutoff = datetime.datetime.now() - datetime.timedelta(minutes=15)
             if self.database[hexident]['lastseen'] < cutoff:
                 self.log("CLEANUP [%s]: Expiring inactive vessel" % (hexident))
-                                hexidents_to_remove.add(hexident)
-                for hexident in hexidents_to_remove:
-                    del self.database[hexident]
+                hexidents_to_remove.add(hexident)
+        for hexident in hexidents_to_remove:
+            del self.database[hexident]
 
     def process_message(self, message):
 
