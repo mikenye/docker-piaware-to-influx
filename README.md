@@ -5,8 +5,18 @@ For more information on what PiAware is, see here: https://flightaware.com/adsb/
 
 ## Multi Architecture Support
 Currently, this image should pull and run on the following architectures:
-* ```amd64```: Linux x86-64
-* ```arm32v7```, ```armv7l```: ARMv7 32-bit (Odroid HC1/HC2/XU4, RPi 2/3)
+* `amd64`: Linux x86-64
+* `arm32v7`, `armv7l`: ARMv7 32-bit (Odroid HC1/HC2/XU4, RPi 2/3/4)
+* `aarch64`, `arm64v8`: ARMv8 64-bit (RPi 4)
+
+## Supported tags and respective Dockerfiles
+* `latest`, `2019-09-12`
+  * `latest-amd64`, `2019-09-12-amd64` (`2019-09-12` branch, `Dockerfile`)
+  * `latest-arm32v7`, `2019-09-12-arm32v7` (`2019-09-12` branch, `Dockerfile.armv7l`)
+  * `latest-aarch64`, `2019-09-12-aarch64` (`2019-09-12` branch, `Dockerfile.aarch64`)
+* `2018-07-06`
+  * `2018-07-06-amd64` (`2018-07-06` branch, `Dockerfile`)
+  * `2018-07-06-arm32v7` (`2018-07-06` branch, `Dockerfile`)
 
 ## Change Log
 
@@ -14,9 +24,10 @@ Currently, this image should pull and run on the following architectures:
 * Implement S3 overlay
 * Logging improvements
 * Fixes for [issue #1](https://github.com/mikenye/docker-piaware-to-influx/issues/1)
+* Add support for `arm64v8` / `aarch64` architecture
 
 ### 2018-07-06
-* Original release.
+* Original release supporting `amd64` and `arm32v7` architectures
  
 ## Up-and-Running
 
