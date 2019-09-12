@@ -1,0 +1,68 @@
+#!/usr/bin/with-contenv bash
+
+# Check to make sure the correct command line arguments have been set
+EXITCODE=0
+echo -ne "\e[31m"
+if [ -z "${INFLUXDB_URL+x}" ]; then
+  echo "ERROR: INFLUXDB_URL environment variable not set"
+  EXITCODE=1
+fi
+if [ -z "${DUMP1090_HOST+x}" ]; then
+  echo "ERROR: DUMP1090_HOST environment variable not set"
+  EXITCODE=1
+fi
+echo -ne "\e[0m"
+if [ $EXITCODE -ne 0 ]; then
+  exit 1
+fi
+
+# Set up timezone
+if [ -z "${TZ}" ]; then
+  echo -ne "\e[33m"
+  echo "WARNING: TZ environment variable not set"
+  echo -ne "\e[0m"
+else
+  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+fi
+
+# Build telegraf config
+cat << EOF > /etc/telegraf/telegraf.conf
+[global_tags]
+
+[agent]
+  interval = "10s"
+  round_interval = true
+  metric_batch_size = 1000
+  metric_buffer_limit = 10000
+  collection_jitter = "0s"
+  flush_interval = "10s"
+  flush_jitter = "0s"
+  precision = ""
+  debug = false
+  quiet = true
+  logfile = ""
+  hostname = ""
+  omit_hostname = true
+
+[[outputs.influxdb]]
+EOF
+
+# Add InfluxDB URL
+echo -n 'urls = ["' >> /etc/telegraf/telegraf.conf
+echo -n $INFLUXDB_URL >> /etc/telegraf/telegraf.conf
+echo '"]' >> /etc/telegraf/telegraf.conf
+
+# Finish config
+cat << EOF >> /etc/telegraf/telegraf.conf
+  database = "piaware"
+  skip_database_creation = false
+  timeout = "5s"
+
+# Influx HTTP write listener
+[[inputs.http_listener]]
+  service_address = ":8186"
+  read_timeout = "10s"
+  write_timeout = "10s"
+EOF
+
+

@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+set -eo pipefail
+
+/usr/bin/python3 \
+    /piaware2influx.py \
+    -ds $DUMP1090_HOST \
+    2>&1
+

@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+
+set -eo pipefail
+
+/usr/bin/telegraf \
+    --config /etc/telegraf/telegraf.conf \
+    2>&1
+
