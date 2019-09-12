@@ -11,6 +11,7 @@ import requests
 
 
 class ADSB_Processor(object):
+
     def __init__(self, telegraf_url):
         self._clear_buffer()
         self.database = {}
@@ -41,7 +42,7 @@ class ADSB_Processor(object):
 
         # if the vessel has been logged
         else:
-            # if we need to back off (ie: log once per second)
+            # if we need to back off (ie: log once per minute)
             if not no_backoff:
                 cutoff = datetime.datetime.now() - datetime.timedelta(seconds=60)
                 if self.database[hexident]['lastlogged'] > cutoff:
@@ -319,7 +320,6 @@ class ADSB_Processor(object):
                                 self.database[message[4]]['data_to_send'] = list()
 
         self.clean_database()
-
 
 def setup_socket(host,port):
     D.log("CONNECT: Connecting to %s:%s to receive dump1090 TCP BaseStation output data" % (HOST, PORT))
