@@ -3,7 +3,7 @@
 # https://github.com/docker-library/official-images/blob/a7ad3081aa5f51584653073424217e461b72670a/bashbrew/go/vendor/src/github.com/docker-library/go-dockerlibrary/architecture/oci-platform.go#L14-L25
 #
 
-VERSION=development
+VERSION="2019-09-12"
 IMAGE=mikenye/piaware-to-influx
 
 docker pull ${IMAGE}:${VERSION}-amd64
