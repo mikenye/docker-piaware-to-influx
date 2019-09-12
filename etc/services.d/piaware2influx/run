@@ -5,5 +5,5 @@ set -eo pipefail
 /usr/bin/python3 \
     /piaware2influx.py \
     -ds $DUMP1090_HOST \
-    2>&1 | awk '{print "[piaware2influx] " $0}'
+    2>&1
 

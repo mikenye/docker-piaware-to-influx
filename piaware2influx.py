@@ -29,7 +29,7 @@ class ADSB_Processor(object):
             self.log("ERROR: telegraf status code was '%s', expected '204'! " % (r.status_code))
 
     def log(self, text):
-        print("%s {%s msgs rx'd, %s points tx'd}" % (text, str(self.messages_processed), str(self.points_sent)))
+        print("[RX: %s, TX: %s] %s" % (str(self.messages_processed), str(self.points_sent), text))
 
     def log_aircraft(self, hexident, text, no_backoff=False):
         logstuff = True
@@ -48,12 +48,11 @@ class ADSB_Processor(object):
                     logstuff = False
 
         if logstuff:
-            logtext = "AIRCRAFT ["
+            logtext = "[Ident: "
             logtext += hexident
-            logtext += "]"
             if self.database[hexident]['callsign'] != "":
-                logtext += "(%s)" % (self.database[hexident]['callsign'])
-            logtext += ": "
+                logtext += " Callsign: %s" % (self.database[hexident]['callsign'])
+            logtext += "] "
             logtext += text
             self.log(logtext)
 
@@ -90,7 +89,6 @@ class ADSB_Processor(object):
             # if we get to an end of message, then we process
             #   the message, and reset our counters & stuff
             if last_two == '\r\n':
-                #print("MESSAGE: ", repr(new_message), len(new_message.split(',')))
                 self.process_message(new_message)
                 self.buffer = self.buffer[count:]
                 self.messages_processed += 1
@@ -100,10 +98,10 @@ class ADSB_Processor(object):
     def clean_database(self):
         hexidents_to_remove = set()
         for hexident in self.database:
-            # work out what was 15 mins ago
+            # work out what was 15 mins ago, and clean out entries older than 15 minutes
             cutoff = datetime.datetime.now() - datetime.timedelta(minutes=15)
             if self.database[hexident]['lastseen'] < cutoff:
-                self.log("CLEANUP [%s]: Expiring inactive vessel" % (hexident))
+                self.log_aircraft(hexident, "Expiring inactive vessel from state database", no_backoff=True)
                 hexidents_to_remove.add(hexident)
         for hexident in hexidents_to_remove:
             del self.database[hexident]
@@ -330,10 +328,10 @@ def setup_socket(host,port):
     while not connected:
         try:
             s.connect((HOST, PORT))
-            print("CONNECT: Connected OK, receiving data")
+            D.log("CONNECT: Connected OK, receiving data")
         except:
             connected = False
-            print("CONNECT: Could not connect, retrying")
+            D.log("CONNECT: Could not connect, retrying")
             time.sleep(1)
         else:
             connected = True

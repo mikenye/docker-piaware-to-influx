@@ -4,5 +4,5 @@ set -eo pipefail
 
 /usr/bin/telegraf \
     --config /etc/telegraf/telegraf.conf \
-    2>&1 | awk '{print "[telegraf] " $0}'
+    2>&1
 
