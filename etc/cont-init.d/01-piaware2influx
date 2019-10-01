@@ -11,6 +11,9 @@ if [ -z "${DUMP1090_HOST+x}" ]; then
   echo "ERROR: DUMP1090_HOST environment variable not set"
   EXITCODE=1
 fi
+if [ -z "${VERBOSE_LOGGING+x}" ]; then
+  VERBOSE_LOGGING=False
+fi
 echo -ne "\e[0m"
 if [ $EXITCODE -ne 0 ]; then
   exit 1

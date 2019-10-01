@@ -8,16 +8,18 @@ import datetime
 import time
 import argparse
 import requests
+import os
 
 
 class ADSB_Processor(object):
 
-    def __init__(self, telegraf_url):
+    def __init__(self, telegraf_url, verbose_logging=False):
         self._clear_buffer()
         self.database = {}
         self.messages_processed = 0
         self.points_sent = 0
         self.telegraf_url = telegraf_url
+        self.verbose_logging = verbose_logging
 
     def send_line_protocol(self, line_protocol):
         url = "%s?precision=s"
@@ -33,7 +35,7 @@ class ADSB_Processor(object):
         print("[RX: %s, TX: %s] %s" % (str(self.messages_processed), str(self.points_sent), text))
 
     def log_aircraft(self, hexident, text, no_backoff=False):
-        logstuff = True
+        logstuff = self.verbose_logging
 
         # if this vessel hasn't been logged, set up 'lastlogged' info
         if 'lastlogged' not in self.database[hexident].keys():
@@ -42,6 +44,7 @@ class ADSB_Processor(object):
 
         # if the vessel has been logged
         else:
+
             # if we need to back off (ie: log once per minute)
             if not no_backoff:
                 cutoff = datetime.datetime.now() - datetime.timedelta(seconds=60)
@@ -348,6 +351,7 @@ if __name__ == "__main__":
     parser.add_argument('-ds', '--dump1090-server', default="127.0.0.1", help="Host/IP for dump1090 [127.0.0.1]")
     parser.add_argument('-dp', '--dump1090-port', default="30003", help="Port for dump1090 TCP BaseStation data [30003]")
     parser.add_argument('-tu', '--telegraf-url', default="http://127.0.0.1:8186/write", help="URL for Telegraf inputs.http_listener [http://127.0.0.1:8186/write]")
+    parser.add_argument('-v',  '--verbose', default=False, type=bool, help="Verbose logging")
     args = parser.parse_args()
 
     print(args)
@@ -355,7 +359,16 @@ if __name__ == "__main__":
     HOST = args.dump1090_server
     PORT = int(args.dump1090_port)
 
-    D = ADSB_Processor(args.telegraf_url)
+    if os.getenv('VERBOSE_LOGGING', "").upper().strip() == 'TRUE':
+        VERBOSE_LOGGING = True
+    elif args.verbose == True:
+        VERBOSE_LOGGING = True
+    else:
+        VERBOSE_LOGGING = False
+
+    print(VERBOSE_LOGGING)
+
+    D = ADSB_Processor(telegraf_url=args.telegraf_url, verbose_logging=VERBOSE_LOGGING)
 
     s = setup_socket(HOST, PORT)
 
