@@ -1,4 +1,5 @@
 #!/usr/bin/with-contenv bash
+#shellcheck shell=bash
 
 # Check to make sure the correct command line arguments have been set
 EXITCODE=0
@@ -25,7 +26,7 @@ if [ -z "${TZ}" ]; then
   echo "WARNING: TZ environment variable not set"
   echo -ne "\e[0m"
 else
-  ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+  ln -snf "/usr/share/zoneinfo/${TZ}" /etc/localtime && echo "${TZ}" > /etc/timezone
 fi
 
 # Build telegraf config
@@ -42,7 +43,7 @@ cat << EOF > /etc/telegraf/telegraf.conf
   flush_jitter = "0s"
   precision = ""
   debug = false
-  quiet = true
+  quiet = false
   logfile = ""
   hostname = ""
   omit_hostname = true
@@ -52,7 +53,7 @@ EOF
 
 # Add InfluxDB URL
 echo -n 'urls = ["' >> /etc/telegraf/telegraf.conf
-echo -n $INFLUXDB_URL >> /etc/telegraf/telegraf.conf
+echo -n "${INFLUXDB_URL}" >> /etc/telegraf/telegraf.conf
 echo '"]' >> /etc/telegraf/telegraf.conf
 
 # Finish config
@@ -67,5 +68,3 @@ cat << EOF >> /etc/telegraf/telegraf.conf
   read_timeout = "10s"
   write_timeout = "10s"
 EOF
-
-

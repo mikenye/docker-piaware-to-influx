@@ -1,20 +1,30 @@
 FROM telegraf:latest
 
-ENV VERSION_S6OVERLAY=v1.22.1.0 \
-    ARCH_S6OVERLAY=amd64 \
-    S6_BEHAVIOUR_IF_STAGE2_FAILS=2
+ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
+    VERBOSE_LOGGING=False \
+    TZ=UTC
 
-ADD https://github.com/just-containers/s6-overlay/releases/download/${VERSION_S6OVERLAY}/s6-overlay-${ARCH_S6OVERLAY}.tar.gz /tmp/s6-overlay.tar.gz
+COPY rootfs/ /
 
-RUN apt-get update && \
-	apt-get install -y --no-install-recommends python3 python3-pip && \
-	pip3 install requests && \
-        tar -xzf /tmp/s6-overlay.tar.gz -C / && \
-	rm -rf /var/lib/apt/lists/* && \
-        rm /tmp/s6-overlay.tar.gz
-
-ADD ./piaware2influx.py /piaware2influx.py
-COPY etc/ /etc/
+RUN set -x && \
+		apt-get update && \
+	  apt-get install -y --no-install-recommends \
+      ca-certificates \
+      gnupg \
+      python3-pip \
+      python3 \
+      && \
+	  pip3 install \
+      requests \
+      && \
+    curl -s https://raw.githubusercontent.com/mikenye/deploy-s6-overlay/master/deploy-s6-overlay.sh | sh && \
+    apt-get remove -y \
+      gnupg \
+      && \
+    apt-get autoremove -y && \
+	  rm -rf /tmp/* /var/lib/apt/lists/* && \
+		telegraf --version >> /VERSIONS && \
+		/piaware2influx.py --version >> /VERSIONS && \
+		cat /VERSIONS
 
 ENTRYPOINT [ "/init" ]
-
