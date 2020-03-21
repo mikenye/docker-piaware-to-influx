@@ -35,7 +35,7 @@ Currently, this image should pull and run on the following architectures:
 
 ### 2019-09-12
 
-* Implement S3 overlay
+* Implement s6-overlay
 * Logging improvements
 * Fixes for [issue #1](https://github.com/mikenye/docker-piaware-to-influx/issues/1)
 * Add support for `arm64v8` / `aarch64` architecture
