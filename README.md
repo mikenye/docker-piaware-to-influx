@@ -27,6 +27,9 @@ Currently, this image should pull and run on the following architectures:
 
 ## Change Log
 
+### 2020-03-23
+* Fix issue with logging not honouring `no_backoff` properly
+
 ### 2020-03-22
 
 * Much needed code tidy up & linting
