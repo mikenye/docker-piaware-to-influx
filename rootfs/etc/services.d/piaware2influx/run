@@ -4,7 +4,6 @@
 set -eo pipefail
 
 exec \
-  /usr/bin/python3 \
-    /piaware2influx.py \
-    -ds "${DUMP1090_HOST}" \
-    2>&1 | awk -W interactive '{print "[piaware2influx] " $0}'
+  /opt/piaware2influx/piaware2influx \
+  -ds "${DUMP1090_HOST}" \
+  2>&1 | awk -W interactive '{print "[piaware2influx] " $0}'
