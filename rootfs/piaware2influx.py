@@ -125,6 +125,7 @@ class ADSB_Processor():
                 if self.database[hexident]['lastlogged'] > cutoff:
                     logstuff = False
 
+        # log the message if required
         if logstuff or self.verbose_logging or no_backoff:
             logtext = "[Ident: "
             logtext += hexident
