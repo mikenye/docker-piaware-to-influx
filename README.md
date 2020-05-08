@@ -60,6 +60,7 @@ docker run \
  --restart=always \
  -e INFLUXDB_URL="http://<influxdb_host>:<influxdb_port>" \
  -e DUMP1090_HOST="<dump1090_host>" \
+ -e DUMP1090_PORT="<dump1090_port>" \
  -e TZ="<your_timezone>" \
  mikenye/piaware-to-influx
 ```
@@ -73,6 +74,7 @@ docker run \
   --restart=always \
   -e INFLUXDB_URL="http://192.168.3.84:8086" \
   -e DUMP1090_HOST="192.168.3.85" \
+  -e DUMP1090_PORT="30003" \
   -e TZ="Australia/Perth" \
   mikenye/piaware-to-influx
 ```
@@ -100,6 +102,7 @@ services:
       - TZ="Australia/Perth"
       - INFLUXDB_URL=http://192.168.3.84:8086
       - DUMP1090_HOST=192.168.3.85
+      - DUMP1090_PORT=30003
       - VERBOSE_LOGGING=False
 ```
 
@@ -139,6 +142,7 @@ services:
         - TZ="Australia/Perth"
         - INFLUXDB_URL=http://192.168.3.84:8086
         - DUMP1090_HOST=piaware
+        - DUMP1090_PORT=30003
         - VERBOSE_LOGGING=False
 ```
 
@@ -159,7 +163,7 @@ Although this container exposes ports (inherited from the telegraf container), n
 
 It will need to be able to access:
 
-* Port `30003` TCP on the dump1090 host
+* Port `30003` TCP on the dump1090 host, or any other port you specify.
 * The InfluxDB server (however you specify in the `INFLUXDB_URL` environment variable)
 
 ## State Tracking
