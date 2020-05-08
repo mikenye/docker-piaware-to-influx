@@ -7,4 +7,5 @@ exec \
   /usr/bin/python3 \
     /piaware2influx.py \
     -ds "${DUMP1090_HOST}" \
+    -dp "${DUMP1090_PORT}" \
     2>&1 | awk -W interactive '{print "[piaware2influx] " $0}'
