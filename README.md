@@ -25,7 +25,10 @@ Currently, this image should pull and run on the following architectures:
 * `development` ([`master` branch](https://github.com/mikenye/docker-piaware-to-influx/tree/master), [`Dockerfile`](https://github.com/mikenye/docker-piaware-to-influx/blob/master/Dockerfile), `amd64` architecture only, built on commit, not recommended for production)
 * Specific version and architecture tags are available if required, however these are not regularly updated. It is generally recommended to run `latest`.
 
-## Change Log
+## Changelog
+
+### 2020-05-08
+* Add `DUMP1090_PORT` option to container (thanks @kylegordon)
 
 ### 2020-03-23
 * Fix issue with logging not honouring `no_backoff` properly
