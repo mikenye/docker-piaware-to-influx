@@ -1,6 +1,8 @@
 #!/usr/bin/env sh
 #shellcheck shell=sh
 
+set -x
+
 REPO=mikenye
 IMAGE=piaware-to-influx
 PLATFORMS="linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64"
