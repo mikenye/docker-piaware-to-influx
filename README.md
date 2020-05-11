@@ -156,7 +156,8 @@ For an explanation of the `mikenye/piaware` image's configuration, see that imag
 There are a series of available variables you are required to set:
 
 * `INFLUXDB_URL` - The URL of your InfluxDB instance, eg: `http://192.168.1.10:8086`
-* `DUMP1090_HOST` - The IP/hostname of your dump1090 instance, eg: `192.168.1.11`. No port required, it will use 30003 by default.
+* `DUMP1090_HOST` - The IP/hostname of your `dump1090` instance, eg: `192.168.1.11`.
+* `DUMP1090_PORT` - The TCP port to connect to `dump1090` on. Use what you have `--net-sbs-port` set to on the `dump1090` host. If not given, `30003` will be used by default.
 * `TZ` - Your local timezone, eg `Australia/Perth`
 * `VERBOSE_LOGGING` - Whether or not to verbosely log. This can get very noisy, so is `False` by default. Set to `True` if you need more verbosity.
 
