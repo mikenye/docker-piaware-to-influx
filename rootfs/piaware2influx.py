@@ -668,6 +668,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print(args)
+    print("piaware2influx.py version %s" % (__version__))
 
     HOST = args.dump1090_server
     PORT = int(args.dump1090_port)
