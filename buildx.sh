@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 #shellcheck shell=sh
 
-set -x
+set -ex
 
 REPO=mikenye
 IMAGE=piaware-to-influx
