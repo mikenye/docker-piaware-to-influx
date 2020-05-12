@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "2020-05-11"
+__version__ = "2020-05-12"
 
 # Protocol data from this URL:
 # http://woodair.net/sbs/article/barebones42_socket_data.htm
@@ -12,6 +12,7 @@ import datetime
 import time
 import argparse
 import requests
+import inspect
 
 
 class ADSB_Processor():
@@ -114,6 +115,8 @@ class ADSB_Processor():
         if 'lastlogged' not in self.database[hexident].keys():
             logstuff = True
             self.database[hexident]['lastlogged'] = datetime.datetime.utcnow()
+            if self.verbose_logging:
+                self.log("<%s> Setting lastlogged for '%s' to '%s'" % (inspect.currentframe().f_code.co_name, hexident, self.database[hexident]['lastlogged']))
 
         # if the vessel has been logged
         else:
@@ -181,7 +184,13 @@ class ADSB_Processor():
             # if we get to an end of message, then we process
             #   the message, and reset our counters & stuff
             if last_two == '\r\n':
+                if self.verbose_logging:
+                    self.log("========== START PROCESSING MESSAGE ==========")
+                self.current_message_datetime = None
                 self.process_message(new_message)
+                self.current_message_datetime = None
+                if self.verbose_logging:
+                    self.log("========== FINISH PROCESSING MESSAGE ==========")
                 self.buffer = self.buffer[count:]
                 self.messages_processed += 1
                 count = 0
@@ -206,6 +215,8 @@ class ADSB_Processor():
                 datetime.timedelta(minutes=minutes_inactivity)
 
             if self.database[hexident]['lastseen'] < cutoff:
+                if self.verbose_logging:
+                    self.log("<%s> Vessel '%s' lastseen: '%s', and cutoff: '%s'" % (inspect.currentframe().f_code.co_name, hexident, self.database[hexident]['lastseen'], cutoff))
                 self.log_aircraft(
                     hexident,
                     "Expiring inactive vessel from state database",
@@ -234,6 +245,11 @@ class ADSB_Processor():
             msgdtstring,
             '%Y/%m/%dT%H:%M:%S.%f'
             )
+        if self.verbose_logging:
+            self.log("<%s> Datetime '%s' generated from string '%s'." % \
+                (inspect.currentframe().f_code.co_name,
+                msgdt, 
+                msgdtstring))
         return msgdt
 
     def add_vessel_to_db(self, message):
@@ -248,8 +264,19 @@ class ADSB_Processor():
             message[4].strip()
         self.database[message[4]]['data_to_send'] = \
             list()
+        
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+        
         self.database[message[4]]['lastseen'] = \
-            self.datetime_msg_generated(message)
+            self.current_message_datetime
+
+        if self.verbose_logging:
+            self.log("<%s> Setting lastseen for '%s' to '%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                self.database[message[4]]['hexident'], 
+                self.database[message[4]]['lastseen']))
+        
         self.database[message[4]]['callsign'] = \
             message[10].strip()
         self.database[message[4]]['current_altitude'] = \
@@ -283,8 +310,18 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB Message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+        
         self.database[message[4]]['lastseen'] = \
-            self.datetime_msg_generated(message)
+            self.current_message_datetime
+
+        if self.verbose_logging:
+            self.log("<%s> Updating lastseen for '%s' to '%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                message[4], 
+                self.database[message[4]]['lastseen']))
 
         if message[10] != '':
             self.database[message[4]]['callsign'] = \
@@ -342,12 +379,17 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+        
         self.database[message[4]]['data_to_send'].append(
             {'current_altitude': message[11],
-             'current_latitude': message[14],
-             'current_longitude': message[15],
-             'datetime': self.datetime_msg_generated(message),
-             })
+            'current_latitude': message[14],
+            'current_longitude': message[15],
+            'datetime': self.current_message_datetime,
+            })              
+        
         self.log_aircraft(message[4], "Alt: %s, Lat: %s, Long: %s" % (
             message[11],
             message[14],
@@ -361,12 +403,17 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+
         self.database[message[4]]['data_to_send'].append(
             {'current_groundspeed': message[12],
-             'current_track': message[13],
-             'current_verticalrate': message[16],
-             'datetime': self.datetime_msg_generated(message),
-             })
+            'current_track': message[13],
+            'current_verticalrate': message[16],
+            'datetime': self.current_message_datetime,
+            })
+        
         self.log_aircraft(
             message[4],
             "GroundSpeed: %s, Track: %s, VerticalRate: %s" % (
@@ -382,10 +429,15 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+
         self.database[message[4]]['data_to_send'].append(
             {'current_altitude': message[11],
-             'datetime': self.datetime_msg_generated(message),
-             })
+            'datetime': self.current_message_datetime,
+            })
+
         self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
     def handle_msg_type_6(self, message):
@@ -395,10 +447,15 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+
         self.database[message[4]]['data_to_send'].append(
             {'current_altitude': message[11],
-             'datetime': self.datetime_msg_generated(message),
-             })
+            'datetime': self.current_message_datetime,
+            })
+
         self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
     def handle_msg_type_7(self, message):
@@ -408,10 +465,15 @@ class ADSB_Processor():
         Parameters:
         message (list): ADSB message (split)
         """
+
+        if self.current_message_datetime == None:
+            self.current_message_datetime = self.datetime_msg_generated(message)
+
         self.database[message[4]]['data_to_send'].append(
             {'current_altitude': message[11],
-             'datetime': self.datetime_msg_generated(message),
-             })
+            'datetime': self.current_message_datetime,
+            })
+
         self.log_aircraft(message[4], "Alt: %s" % (message[11]))
 
     def is_message_valid(self, message):
@@ -531,6 +593,11 @@ class ADSB_Processor():
 
             # Split message into fields
             message = message.split(',')
+
+            if self.verbose_logging:
+                self.log("<%s> Message contents: '%s'" % \
+                    (inspect.currentframe().f_code.co_name,
+                    repr(message)))
 
             # If the aircraft does not exist in our database,
             # then create it
