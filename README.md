@@ -25,31 +25,6 @@ Currently, this image should pull and run on the following architectures:
 * `development` ([`master` branch](https://github.com/mikenye/docker-piaware-to-influx/tree/master), [`Dockerfile`](https://github.com/mikenye/docker-piaware-to-influx/blob/master/Dockerfile), `amd64` architecture only, built on commit, not recommended for production)
 * Specific version and architecture tags are available if required, however these are not regularly updated. It is generally recommended to run `latest`.
 
-## Changelog
-
-### 2020-05-08
-* Add `DUMP1090_PORT` option to container (thanks @kylegordon)
-
-### 2020-03-23
-* Fix issue with logging not honouring `no_backoff` properly
-
-### 2020-03-22
-
-* Much needed code tidy up & linting
-* Fix issue with vessel being added to state database and then rapidly expiring due to timezone mismatch
-* Fix issue with log buffering
-
-### 2019-09-12
-
-* Implement s6-overlay
-* Logging improvements
-* Fixes for [issue #1](https://github.com/mikenye/docker-piaware-to-influx/issues/1)
-* Add support for `arm64v8` / `aarch64` architecture
-
-### 2018-07-06
-
-* Original release supporting `amd64` and `arm32v7` architectures
-
 ## Up-and-Running with `docker run`
 
 Firstly, make sure all your hosts (`influxdb`, `piaware`/`dump1090`/`readsb` and the docker host that will run this container) have their clocks set correctly and are synchronised with NTP.
@@ -286,3 +261,35 @@ Will give a result such as this:
 ## Getting help
 
 Please feel free to [open an issue on the project's GitHub](https://github.com/mikenye/docker-piaware-to-influx/issues).
+
+## Changelog
+
+### 2020-05-12
+
+* Additional verbose logging to help troubleshoot issues
+* CPU utilisation improvements (hopefully) by preventing `ADSB_Processor.datetime_msg_generated` being run more than once per message
+
+### 2020-05-08
+
+* Add `DUMP1090_PORT` option to container (thanks @kylegordon)
+
+### 2020-03-23
+
+* Fix issue with logging not honouring `no_backoff` properly
+
+### 2020-03-22
+
+* Much needed code tidy up & linting
+* Fix issue with vessel being added to state database and then rapidly expiring due to timezone mismatch
+* Fix issue with log buffering
+
+### 2019-09-12
+
+* Implement s6-overlay
+* Logging improvements
+* Fixes for [issue #1](https://github.com/mikenye/docker-piaware-to-influx/issues/1)
+* Add support for `arm64v8` / `aarch64` architecture
+
+### 2018-07-06
+
+* Original release supporting `amd64` and `arm32v7` architectures
