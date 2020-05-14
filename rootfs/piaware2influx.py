@@ -114,7 +114,7 @@ class ADSB_Processor():
         # if this vessel hasn't been logged, set up 'lastlogged' info
         if 'lastlogged' not in self.database[hexident].keys():
             logstuff = True
-            self.database[hexident]['lastlogged'] = datetime.datetime.utcnow()
+            self.database[hexident]['lastlogged'] = datetime.datetime.now()
             if self.verbose_logging:
                 self.log("<%s> Setting lastlogged for '%s' to '%s'" % (inspect.currentframe().f_code.co_name, hexident, self.database[hexident]['lastlogged']))
 
@@ -123,7 +123,7 @@ class ADSB_Processor():
 
             # if we need to back off (ie: log once per minute)
             if not no_backoff:
-                cutoff = datetime.datetime.utcnow()
+                cutoff = datetime.datetime.now()
                 cutoff -= datetime.timedelta(seconds=60)
                 if self.database[hexident]['lastlogged'] > cutoff:
                     logstuff = False
@@ -211,7 +211,7 @@ class ADSB_Processor():
         for hexident in self.database:
             # work out what was 15 mins ago,
             # and clean out entries older than 15 minutes
-            cutoff = datetime.datetime.utcnow() - \
+            cutoff = datetime.datetime.now() - \
                 datetime.timedelta(minutes=minutes_inactivity)
 
             if self.database[hexident]['lastseen'] < cutoff:
