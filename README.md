@@ -264,6 +264,10 @@ Please feel free to [open an issue on the project's GitHub](https://github.com/m
 
 ## Changelog
 
+### 2020-05-14
+
+* Fix issue #4
+
 ### 2020-05-12
 
 * Additional verbose logging to help troubleshoot issues
