@@ -77,7 +77,7 @@ class ADSB_Processor():
             self.log(errormsg)
         if telegraf_request.status_code != 204:
             errormsg = "ERROR: telegraf status code was '"
-            errormsg += telegraf_request.status_code
+            errormsg += str(telegraf_request.status_code)
             errormsg += "' expected '204'!"
             self.log(errormsg)
 
