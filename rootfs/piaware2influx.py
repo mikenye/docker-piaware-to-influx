@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "2020-05-14"
+__version__ = "2020-05-23"
 
 # Protocol data from this URL:
 # http://woodair.net/sbs/article/barebones42_socket_data.htm
@@ -388,7 +388,7 @@ class ADSB_Processor():
             'current_latitude': message[14],
             'current_longitude': message[15],
             'datetime': self.current_message_datetime,
-            })              
+            })
         
         self.log_aircraft(message[4], "Alt: %s, Lat: %s, Long: %s" % (
             message[11],
@@ -499,7 +499,15 @@ class ADSB_Processor():
                     # If message type is MSG (TRANSMISSION MESSAGE)
                     if message[0].upper() == "MSG":
 
+                        if self.verbose_logging:
+                            self.log("<%s> Message is valid" % \
+                                (inspect.currentframe().f_code.co_name))
+
                         return True
+
+        if self.verbose_logging:
+            self.log("<%s> Invalid message received" % \
+                (inspect.currentframe().f_code.co_name))
 
         return False
 
@@ -549,6 +557,12 @@ class ADSB_Processor():
                 line_protocol += data_to_send[field].strip()
                 first = False
                 valid = True
+
+        if self.verbose_logging:
+            self.log("<%s> Line protocol '%s', is valid: '%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                 line_protocol,
+                 valid))
 
         return valid, line_protocol
 
@@ -610,11 +624,17 @@ class ADSB_Processor():
 
             # ES Identification and Category (callsign update)
             if message[1] == '1':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 1, nothing to do." % \
+                        (inspect.currentframe().f_code.co_name))
                 pass
 
             # ES Surface Position Message
             # (Triggered by nose gear squat switch.)
             elif message[1] == '2':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 2, nothing to do." % \
+                        (inspect.currentframe().f_code.co_name))
                 pass
 
             # ES Airborne Position Message
@@ -622,6 +642,9 @@ class ADSB_Processor():
                   message[11] != '' and
                   message[14] != '' and
                   message[15] != ''):
+                if self.verbose_logging:
+                    self.log("<%s> Message type 3, will process." % \
+                        (inspect.currentframe().f_code.co_name))
                 self.handle_msg_type_3(message)
 
             # ES Airborne Velocity Message
@@ -629,7 +652,9 @@ class ADSB_Processor():
                   message[12] != '' and
                   message[13] != '' and
                   message[16] != ''):
-
+                if self.verbose_logging:
+                    self.log("<%s> Message type 4, will process." % \
+                        (inspect.currentframe().f_code.co_name))
                 self.handle_msg_type_4(message)
 
             # Surveillance Alt Message
@@ -637,6 +662,9 @@ class ADSB_Processor():
             # MSG,5 will only be output if  the aircraft has
             # previously sent a MSG,1, 2, 3, 4 or 8 signal.
             elif message[1] == '5' and message[11] != '':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 5, will process." % \
+                        (inspect.currentframe().f_code.co_name))
                 self.handle_msg_type_5(message)
 
             # Surveillance ID Message
@@ -644,17 +672,26 @@ class ADSB_Processor():
             # MSG,6 will only be output if  the aircraft has
             # previously sent a MSG,1, 2, 3, 4 or 8 signal.
             elif message[1] == '6' and message[11] != '':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 6, will process." % \
+                        (inspect.currentframe().f_code.co_name))
                 self.handle_msg_type_6(message)
 
             # Air To Air Message
             # Triggered from TCAS.
             # MSG,7 is now included in the SBS socket output.
             elif message[1] == '7' and message[11] != '':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 7, will process." % \
+                        (inspect.currentframe().f_code.co_name))
                 self.handle_msg_type_7(message)
 
             # All Call Reply
             # Broadcast but also triggered by ground radar
             elif message[1] == '8':
+                if self.verbose_logging:
+                    self.log("<%s> Message type 8, nothing to do." % \
+                        (inspect.currentframe().f_code.co_name))
                 pass
 
             # Send data to InfluxDB
