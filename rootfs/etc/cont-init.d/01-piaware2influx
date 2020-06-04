@@ -63,7 +63,7 @@ cat << EOF >> /etc/telegraf/telegraf.conf
   timeout = "5s"
 
 # Influx HTTP write listener
-[[inputs.http_listener]]
+[[inputs.influxdb_listener]]
   service_address = ":8186"
   read_timeout = "10s"
   write_timeout = "10s"
