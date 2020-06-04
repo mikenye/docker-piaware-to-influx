@@ -20,6 +20,7 @@ RUN set -x && \
       libc-dev \
       make \
       netbase \
+      python3.7 \
       python3 \
       python3-pip \
       wget \
