@@ -47,7 +47,7 @@ RUN set -x && \
     git clone https://github.com/influxdata/telegraf.git /src/telegraf && \
     cd /src/telegraf && \
     export BRANCH_TELEGRAF=$(git tag --sort="-creatordate" | head -1) && \
-    git checkout tags/${BRANCH_TELEGRAF}
+    git checkout tags/${BRANCH_TELEGRAF} && \
     make && \
     make install && \
     mkdir -p /etc/telegraf && \
