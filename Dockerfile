@@ -13,18 +13,19 @@ RUN set -x && \
 		apt-get update && \
 	  apt-get install -y --no-install-recommends \
       ca-certificates \
-      gnupg \
-      python3-pip \
-      python3 \
-      make \
-      git \
-      gcc \
-      libc-dev \
-      wget \
-      netbase \
       curl \
+      gcc \
+      git \
+      gnupg \
+      libc-dev \
+      make \
+      netbase \
+      python3 \
+      python3-pip \
+      wget \
       && \
 	  pip3 install \
+      python-dateutil \
       requests \
       && \
     # Build go-bootstrap

@@ -558,7 +558,7 @@ class ADSB_Processor():
                 first = False
                 valid = True
 
-        # timestamp
+        # Unix nanosecond timestamp.
         line_protocol += " %d" % (
             datetime.datetime.timestamp(
                 data_to_send['datetime']
