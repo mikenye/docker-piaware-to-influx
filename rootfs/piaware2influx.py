@@ -558,6 +558,13 @@ class ADSB_Processor():
                 first = False
                 valid = True
 
+        # timestamp
+        line_protocol += " %d" % (
+            datetime.datetime.timestamp(
+                self.database[message[4]]['datetime']
+            ) * 1000000000
+        )
+
         if self.verbose_logging:
             self.log("<%s> Line protocol '%s', is valid: '%s'" % \
                 (inspect.currentframe().f_code.co_name,
