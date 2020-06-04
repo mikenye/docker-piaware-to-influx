@@ -13,6 +13,7 @@ import time
 import argparse
 import requests
 import inspect
+import dateutil.tz
 
 
 class ADSB_Processor():
@@ -53,6 +54,7 @@ class ADSB_Processor():
         self.points_sent = 0
         self.telegraf_url = telegraf_url
         self.verbose_logging = verbose_logging
+        self.timezone = dateutil.tz.gettz()
         self._clear_buffer()
 
     def send_line_protocol(self, line_protocol):
@@ -89,7 +91,7 @@ class ADSB_Processor():
         text (str): Log message
         """
         logmsg = "%s [RX: %s, TX: %s, V: %s] %s" % (
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S").replace(tzinfo=self.tz),
             str(self.messages_processed),
             str(self.points_sent),
             str(len(self.database.keys())),
@@ -114,7 +116,8 @@ class ADSB_Processor():
         # if this vessel hasn't been logged, set up 'lastlogged' info
         if 'lastlogged' not in self.database[hexident].keys():
             logstuff = True
-            self.database[hexident]['lastlogged'] = datetime.datetime.now()
+            self.database[hexident]['lastlogged'] = \
+                datetime.datetime.now().replace(tzinfo=self.tz)
             if self.verbose_logging:
                 self.log("<%s> Setting lastlogged for '%s' to '%s'" % (inspect.currentframe().f_code.co_name, hexident, self.database[hexident]['lastlogged']))
 
@@ -123,7 +126,7 @@ class ADSB_Processor():
 
             # if we need to back off (ie: log once per minute)
             if not no_backoff:
-                cutoff = datetime.datetime.now()
+                cutoff = datetime.datetime.now().replace(tzinfo=self.tz)
                 cutoff -= datetime.timedelta(seconds=60)
                 if self.database[hexident]['lastlogged'] > cutoff:
                     logstuff = False
@@ -211,7 +214,7 @@ class ADSB_Processor():
         for hexident in self.database:
             # work out what was 15 mins ago,
             # and clean out entries older than 15 minutes
-            cutoff = datetime.datetime.now() - \
+            cutoff = datetime.datetime.now().replace(tzinfo=self.tz) - \
                 datetime.timedelta(minutes=minutes_inactivity)
 
             if self.database[hexident]['lastseen'] < cutoff:
@@ -244,7 +247,7 @@ class ADSB_Processor():
         msgdt = datetime.datetime.strptime(
             msgdtstring,
             '%Y/%m/%dT%H:%M:%S.%f'
-            )
+            ).replace(tzinfo=self.tz)
         if self.verbose_logging:
             self.log("<%s> Datetime '%s' generated from string '%s'." % \
                 (inspect.currentframe().f_code.co_name,
