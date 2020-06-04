@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "2020-05-23"
+__version__ = "2020-06-04"
 
 # Protocol data from this URL:
 # http://woodair.net/sbs/article/barebones42_socket_data.htm
@@ -574,9 +574,24 @@ class ADSB_Processor():
         message (list): ADSB Message (processed)
         """
         # Do we have data to send?
+
+        if self.verbose_logging:
+            self.log("<%s> Data to send: '%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                 repr(self.database[message[4]]['data_to_send']),
+                 ))
+
         if len(self.database[message[4]]['data_to_send']) >= 1:
 
             # Do we have a callsign?
+
+            if self.verbose_logging:
+            self.log("<%s> Callsign / Squawk: '%s'/'%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                 repr(self.database[message[4]]['callsign']),
+                 repr(self.database[message[4]]['squawk'])
+                 ))
+
             if (
                     self.database[message[4]]['callsign'] != ''
                     and
