@@ -561,7 +561,7 @@ class ADSB_Processor():
         # timestamp
         line_protocol += " %d" % (
             datetime.datetime.timestamp(
-                self.database[message[4]]['datetime']
+                data_to_send['datetime']
             ) * 1000000000
         )
 
