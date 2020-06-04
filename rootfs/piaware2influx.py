@@ -586,11 +586,11 @@ class ADSB_Processor():
             # Do we have a callsign?
 
             if self.verbose_logging:
-            self.log("<%s> Callsign / Squawk: '%s'/'%s'" % \
-                (inspect.currentframe().f_code.co_name,
-                 repr(self.database[message[4]]['callsign']),
-                 repr(self.database[message[4]]['squawk'])
-                 ))
+                self.log("<%s> Callsign / Squawk: '%s'/'%s'" % \
+                    (inspect.currentframe().f_code.co_name,
+                    repr(self.database[message[4]]['callsign']),
+                    repr(self.database[message[4]]['squawk'])
+                    ))
 
             if (
                     self.database[message[4]]['callsign'] != ''
