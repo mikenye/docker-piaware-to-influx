@@ -54,7 +54,7 @@ class ADSB_Processor():
         self.points_sent = 0
         self.telegraf_url = telegraf_url
         self.verbose_logging = verbose_logging
-        self.timezone = dateutil.tz.gettz()
+        self.tz = dateutil.tz.gettz()
         self._clear_buffer()
 
     def send_line_protocol(self, line_protocol):
