@@ -46,7 +46,7 @@ RUN set -x && \
     # Build & install telegraf
     git clone https://github.com/influxdata/telegraf.git /src/telegraf && \
     cd /src/telegraf && \
-    make -d && \
+    make && \
     make install && \
     mkdir -p /etc/telegraf && \
     # Deploy s6-overlay
