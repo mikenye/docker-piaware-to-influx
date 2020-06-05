@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "2020-06-04"
+__version__ = "2020-06-05"
 
 # Protocol data from this URL:
 # http://woodair.net/sbs/article/barebones42_socket_data.htm
