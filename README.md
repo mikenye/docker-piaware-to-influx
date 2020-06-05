@@ -27,6 +27,10 @@ Currently, this image should pull and run on the following architectures:
 * `development` ([`master` branch](https://github.com/mikenye/docker-piaware-to-influx/tree/master), [`Dockerfile`](https://github.com/mikenye/docker-piaware-to-influx/blob/master/Dockerfile), `amd64` architecture only, built on commit, not recommended for production)
 * Specific version and architecture tags are available if required, however these are not regularly updated. It is generally recommended to run `latest`.
 
+## A note about timezones
+
+It is very important that this container's timezone matches the timezone of the BaseStation data source! Without this, the container may not behave properly.
+
 ## Up-and-Running with `docker run`
 
 Firstly, make sure all your hosts (`influxdb`, `piaware`/`dump1090`/`readsb` and the docker host that will run this container) have their clocks set correctly and are synchronised with NTP.
@@ -265,6 +269,13 @@ Will give a result such as this:
 Please feel free to [open an issue on the project's GitHub](https://github.com/mikenye/docker-piaware-to-influx/issues).
 
 ## Changelog
+
+### 2020-06-05
+
+* Make the code timezone aware
+* Send data even if we don't have a callsign or squawk yet
+* Move away from the [`telegraf`](https://hub.docker.com/_/telegraf) container (was still using Debian 9, outdated CA certs, other issues), and instead have moved to [`debian:stable-slim`](https://hub.docker.com/_/debian). We build `go` from scratch too. This hopefully ensures the least amount of security vulnerabilities should be present in the container.
+* Add a whole lot of additional verbose logging to assist with troubleshooting
 
 ### 2020-05-14
 
