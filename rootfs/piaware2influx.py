@@ -91,7 +91,7 @@ class ADSB_Processor():
         text (str): Log message
         """
         logmsg = "%s [RX: %s, TX: %s, V: %s] %s" % (
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S").replace(tzinfo=self.tz),
+            datetime.datetime.now().replace(tzinfo=self.tz).strftime("%Y-%m-%d %H:%M:%S"),
             str(self.messages_processed),
             str(self.points_sent),
             str(len(self.database.keys())),
