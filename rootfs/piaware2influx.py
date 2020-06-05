@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "2020-05-23"
+__version__ = "2020-06-05"
 
 # Protocol data from this URL:
 # http://woodair.net/sbs/article/barebones42_socket_data.htm
@@ -13,6 +13,7 @@ import time
 import argparse
 import requests
 import inspect
+import dateutil.tz
 
 
 class ADSB_Processor():
@@ -53,6 +54,7 @@ class ADSB_Processor():
         self.points_sent = 0
         self.telegraf_url = telegraf_url
         self.verbose_logging = verbose_logging
+        self.tz = dateutil.tz.gettz()
         self._clear_buffer()
 
     def send_line_protocol(self, line_protocol):
@@ -89,7 +91,7 @@ class ADSB_Processor():
         text (str): Log message
         """
         logmsg = "%s [RX: %s, TX: %s, V: %s] %s" % (
-            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            datetime.datetime.now().replace(tzinfo=self.tz).strftime("%Y-%m-%d %H:%M:%S"),
             str(self.messages_processed),
             str(self.points_sent),
             str(len(self.database.keys())),
@@ -114,7 +116,8 @@ class ADSB_Processor():
         # if this vessel hasn't been logged, set up 'lastlogged' info
         if 'lastlogged' not in self.database[hexident].keys():
             logstuff = True
-            self.database[hexident]['lastlogged'] = datetime.datetime.now()
+            self.database[hexident]['lastlogged'] = \
+                datetime.datetime.now().replace(tzinfo=self.tz)
             if self.verbose_logging:
                 self.log("<%s> Setting lastlogged for '%s' to '%s'" % (inspect.currentframe().f_code.co_name, hexident, self.database[hexident]['lastlogged']))
 
@@ -123,7 +126,7 @@ class ADSB_Processor():
 
             # if we need to back off (ie: log once per minute)
             if not no_backoff:
-                cutoff = datetime.datetime.now()
+                cutoff = datetime.datetime.now().replace(tzinfo=self.tz)
                 cutoff -= datetime.timedelta(seconds=60)
                 if self.database[hexident]['lastlogged'] > cutoff:
                     logstuff = False
@@ -211,7 +214,7 @@ class ADSB_Processor():
         for hexident in self.database:
             # work out what was 15 mins ago,
             # and clean out entries older than 15 minutes
-            cutoff = datetime.datetime.now() - \
+            cutoff = datetime.datetime.now().replace(tzinfo=self.tz) - \
                 datetime.timedelta(minutes=minutes_inactivity)
 
             if self.database[hexident]['lastseen'] < cutoff:
@@ -244,7 +247,7 @@ class ADSB_Processor():
         msgdt = datetime.datetime.strptime(
             msgdtstring,
             '%Y/%m/%dT%H:%M:%S.%f'
-            )
+            ).replace(tzinfo=self.tz)
         if self.verbose_logging:
             self.log("<%s> Datetime '%s' generated from string '%s'." % \
                 (inspect.currentframe().f_code.co_name,
@@ -527,18 +530,25 @@ class ADSB_Processor():
         line_protocol += ","
 
         # tags
+        # include hexident as every message should have one
         line_protocol += "hexident="
         line_protocol += message[4].strip()
-        line_protocol += ","
 
-        line_protocol += "callsign="
-        line_protocol += \
-            self.database[message[4]]['callsign'].strip()
-        line_protocol += ","
+        # include callsign if present
+        if self.database[message[4]]['callsign'] != '':
+            line_protocol += ","
+            line_protocol += "callsign="
+            line_protocol += \
+                self.database[message[4]]['callsign'].strip()
 
-        line_protocol += "squawk="
-        line_protocol += \
-            self.database[message[4]]['squawk'].strip()
+        # include squawk if present
+        if self.database[message[4]]['squawk'] != '':
+            line_protocol += ","
+            line_protocol += "squawk="
+            line_protocol += \
+                self.database[message[4]]['squawk'].strip()
+
+        # spacer between tags & fields
         line_protocol += " "
 
         # fields
@@ -558,6 +568,13 @@ class ADSB_Processor():
                 first = False
                 valid = True
 
+        # Unix nanosecond timestamp.
+        line_protocol += " %d" % (
+            datetime.datetime.timestamp(
+                data_to_send['datetime']
+            ) * 1000000000
+        )
+
         if self.verbose_logging:
             self.log("<%s> Line protocol '%s', is valid: '%s'" % \
                 (inspect.currentframe().f_code.co_name,
@@ -574,27 +591,46 @@ class ADSB_Processor():
         message (list): ADSB Message (processed)
         """
         # Do we have data to send?
+
+        if self.verbose_logging:
+            self.log("<%s> Data to send: '%s'" % \
+                (inspect.currentframe().f_code.co_name,
+                 repr(self.database[message[4]]['data_to_send']),
+                 ))
+
         if len(self.database[message[4]]['data_to_send']) >= 1:
 
             # Do we have a callsign?
-            if (
-                    self.database[message[4]]['callsign'] != ''
-                    and
-                    self.database[message[4]]['squawk'] != ''
-            ):
 
-                # iterate through data to send
-                for data_to_send in self.database[message[4]]['data_to_send']:
+            if self.verbose_logging:
+                self.log("<%s> Callsign / Squawk: '%s'/'%s'" % \
+                    (inspect.currentframe().f_code.co_name,
+                    repr(self.database[message[4]]['callsign']),
+                    repr(self.database[message[4]]['squawk'])
+                    ))
 
-                    valid, line_protocol = \
-                        self.prepare_line_protocol(message, data_to_send)
+            # previously, this script would only send data if we had a callsign and squawk.
+            # changed on 5th June 2020 to send data regardless of this.
+            #
+            # if (
+            #         self.database[message[4]]['callsign'] != ''
+            #         and
+            #         self.database[message[4]]['squawk'] != ''
+            # ):
+            #
 
-                    # send line protocol
-                    if valid:
-                        self.send_line_protocol(line_protocol)
+            # iterate through data to send
+            for data_to_send in self.database[message[4]]['data_to_send']:
 
-                # remove entries we've already sent
-                self.database[message[4]]['data_to_send'] = list()
+                valid, line_protocol = \
+                    self.prepare_line_protocol(message, data_to_send)
+
+                # send line protocol
+                if valid:
+                    self.send_line_protocol(line_protocol)
+
+            # remove entries we've already sent
+            self.database[message[4]]['data_to_send'] = list()
 
     def process_message(self, message):
         """

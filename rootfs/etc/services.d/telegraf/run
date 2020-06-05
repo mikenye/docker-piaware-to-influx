@@ -4,6 +4,6 @@
 set -eo pipefail
 
 exec \
-  /usr/bin/telegraf \
+  /usr/local/bin/telegraf \
     --config /etc/telegraf/telegraf.conf \
     2>&1 | awk -W interactive '{print "[telegraf] " $0}'

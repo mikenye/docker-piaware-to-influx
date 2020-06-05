@@ -2,6 +2,8 @@
 
 Pull ADS-B data from `dump1090`, `readsb` or another host that can provide BaseStation data, convert to InfluxDB line protocol and send to InfluxDB (v1.x)
 
+If I could turn back time (*if I could find a way*), I would've called this project **adsb-to-influx** as it does not require `piaware` to work - just a source of BaseStation data.
+
 For more information on PiAware, see here: [FlightAware-PiAware](https://flightaware.com/adsb/piaware/)
 
 This image works well with:
