@@ -530,18 +530,25 @@ class ADSB_Processor():
         line_protocol += ","
 
         # tags
+        # include hexident as every message should have one
         line_protocol += "hexident="
         line_protocol += message[4].strip()
-        line_protocol += ","
 
-        line_protocol += "callsign="
-        line_protocol += \
-            self.database[message[4]]['callsign'].strip()
-        line_protocol += ","
+        # include callsign if present
+        if self.database[message[4]]['callsign'] != '':
+            line_protocol += ","
+            line_protocol += "callsign="
+            line_protocol += \
+                self.database[message[4]]['callsign'].strip()
 
-        line_protocol += "squawk="
-        line_protocol += \
-            self.database[message[4]]['squawk'].strip()
+        # include squawk if present
+        if self.database[message[4]]['squawk'] != '':
+            line_protocol += ","
+            line_protocol += "squawk="
+            line_protocol += \
+                self.database[message[4]]['squawk'].strip()
+
+        # spacer between tags & fields
         line_protocol += " "
 
         # fields
@@ -602,24 +609,28 @@ class ADSB_Processor():
                     repr(self.database[message[4]]['squawk'])
                     ))
 
-            if (
-                    self.database[message[4]]['callsign'] != ''
-                    and
-                    self.database[message[4]]['squawk'] != ''
-            ):
+            # previously, this script would only send data if we had a callsign and squawk.
+            # changed on 5th June 2020 to send data regardless of this.
+            #
+            # if (
+            #         self.database[message[4]]['callsign'] != ''
+            #         and
+            #         self.database[message[4]]['squawk'] != ''
+            # ):
+            #
 
-                # iterate through data to send
-                for data_to_send in self.database[message[4]]['data_to_send']:
+            # iterate through data to send
+            for data_to_send in self.database[message[4]]['data_to_send']:
 
-                    valid, line_protocol = \
-                        self.prepare_line_protocol(message, data_to_send)
+                valid, line_protocol = \
+                    self.prepare_line_protocol(message, data_to_send)
 
-                    # send line protocol
-                    if valid:
-                        self.send_line_protocol(line_protocol)
+                # send line protocol
+                if valid:
+                    self.send_line_protocol(line_protocol)
 
-                # remove entries we've already sent
-                self.database[message[4]]['data_to_send'] = list()
+            # remove entries we've already sent
+            self.database[message[4]]['data_to_send'] = list()
 
     def process_message(self, message):
         """
