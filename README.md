@@ -274,7 +274,7 @@ Please feel free to [open an issue on the project's GitHub](https://github.com/m
 
 * Make the code timezone aware
 * Send data even if we don't have a callsign or squawk yet
-* Move away from the [`telegraf`](https://hub.docker.com/_/telegraf) container (was still using Debian 9, outdated CA certs, other issues), and instead have moved to [`debian:stable-slim`](https://hub.docker.com/_/debian). We build `go` from scratch too. This hopefully ensures the least amount of security vulnerabilities should be present in the container.
+* Move away from the [`telegraf`](https://hub.docker.com/_/telegraf) container (was still using Debian 9, outdated CA certs, other issues), and instead have moved to [`debian:stable-slim`](https://hub.docker.com/_/debian).
 * Add a whole lot of additional verbose logging to assist with troubleshooting
 
 ### 2020-05-14

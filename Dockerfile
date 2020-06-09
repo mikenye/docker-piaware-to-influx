@@ -31,6 +31,7 @@ RUN set -x && \
 	  apt-get install -y --no-install-recommends \
       ca-certificates \
       curl \
+      file \
       git \
       gnupg \
       python3 \
@@ -46,6 +47,7 @@ RUN set -x && \
     # Clean up
     apt-get remove -y \
       curl \
+      file \
       git \
       gnupg \
       python3-pip \
