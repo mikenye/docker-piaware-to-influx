@@ -52,7 +52,7 @@ else
   echo '  quiet = false' >> /etc/telegraf/telegraf.conf
 fi
 
-cat << EOF > /etc/telegraf/telegraf.conf
+cat << EOF >> /etc/telegraf/telegraf.conf
   logfile = ""
   hostname = ""
   omit_hostname = true
