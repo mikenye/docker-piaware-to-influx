@@ -136,10 +136,16 @@ For an explanation of the `mikenye/piaware` image's configuration, see that imag
 
 There are a series of available variables you are required to set:
 
-* `INFLUXDB_URL` - The URL of your InfluxDB instance, eg: `http://192.168.1.10:8086`
-* `DUMP1090_HOST` - The IP/hostname of your `dump1090` instance, eg: `192.168.1.11`.
+* `INFLUXDB_URL` - The URL of your InfluxDB instance, e.g.: `http://192.168.1.10:8086`
+* `DUMP1090_HOST` - The IP/hostname of your `dump1090` instance, e.g.: `192.168.1.11`.
+
+The following additional variables may be set if desired:
+
+* `INFLUXDB_DB` - The name of the InfluxDB database, e.g.: `piaware` (the default). Telegraf is configured to create this database if it does not yet exist. If your server requires authentication and the specified user/pass below does not have permission to create a database, create the database manaully before starting this container.
+* `INFLUXDB_USER` - User name for authenticating with InfluxDB, if required by your server
+* `INFLUXDB_PASS` - Password for authenticating with InfluxDB, if required by your server
 * `DUMP1090_PORT` - The TCP port to connect to `dump1090` on. Use what you have `--net-sbs-port` set to on the `dump1090` host. If not given, `30003` will be used by default.
-* `TZ` - Your local timezone, eg `Australia/Perth`
+* `TZ` - Your local timezone, e.g. `Australia/Perth`
 * `VERBOSE_LOGGING` - Whether or not to verbosely log. This can get very noisy, so is `False` by default. Set to `True` if you need more verbosity.
 
 ## Ports
