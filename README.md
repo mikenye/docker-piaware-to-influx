@@ -73,7 +73,7 @@ Firstly, make sure all your hosts (`influxdb`, `piaware`/`dump1090`/`readsb` and
 
 An example `docker-compose.xml` file is below:
 
-```shell
+```yaml
 version: '2.0'
 
 services:
@@ -83,7 +83,7 @@ services:
     container_name: piaware2influx
     restart: always
     environment:
-      - TZ="Australia/Perth"
+      - TZ=Australia/Perth
       - INFLUXDB_URL=http://192.168.3.84:8086
       - DUMP1090_HOST=192.168.3.85
       - DUMP1090_PORT=30003
@@ -96,7 +96,7 @@ It will then convert the data to line protocol, and send to InfluxDB, using data
 
 ## Up-and-Running with Docker Compose, including `mikenye/piaware`
 
-```shell
+```yaml
 version: '2.0'
 
 services:
@@ -113,7 +113,7 @@ services:
       - 8080:8080
       - 30005:30005
     environment:
-      - TZ="Australia/Perth"
+      - TZ=Australia/Perth
       - LAT=-33.33333
       - LONG=111.111111
 
@@ -123,7 +123,7 @@ services:
       container_name: piaware2influx
       restart: always
       environment:
-        - TZ="Australia/Perth"
+        - TZ=Australia/Perth
         - INFLUXDB_URL=http://192.168.3.84:8086
         - DUMP1090_HOST=piaware
         - DUMP1090_PORT=30003
