@@ -1,5 +1,7 @@
 FROM golang:1 AS telegraf_builder
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 RUN set -x && \
     apt-get update && \
     apt-get install --no-install-recommends -y \
@@ -11,12 +13,14 @@ RUN set -x && \
       && \
     # Build telegraf
     git clone https://github.com/influxdata/telegraf.git /src/telegraf && \
-    cd /src/telegraf && \
-    export BRANCH_TELEGRAF=$(git tag --sort="-creatordate" | head -1) && \
-    git checkout tags/${BRANCH_TELEGRAF} && \
+    pushd /src/telegraf && \
+    BRANCH_TELEGRAF=$(git tag --sort="-creatordate" | head -1) && \
+    git checkout tags/"${BRANCH_TELEGRAF}" && \
     make
 
 FROM debian:stable-slim AS final
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV DUMP1090_PORT=30003 \
     S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
@@ -37,7 +41,7 @@ RUN set -x && \
       python3 \
       python3-pip \
       && \
-	  pip3 install \
+	  pip3 install --no-cache-dir \
       python-dateutil \
       requests \
       && \

@@ -33,66 +33,69 @@ else
 fi
 
 # Build telegraf config
-cat << EOF > /etc/telegraf/telegraf.conf
+{
+echo """
 [global_tags]
 
 [agent]
-  interval = "10s"
+  interval = \"10s\"
   round_interval = true
   metric_batch_size = 1000
   metric_buffer_limit = 10000
-  collection_jitter = "0s"
-  flush_interval = "10s"
-  flush_jitter = "0s"
+  collection_jitter = \"0s\"
+  flush_interval = \"10s\"
+  flush_jitter = \"0s\"
   precision = ""
-EOF
+"""
 
 if [ -z "${VERBOSE_LOGGING+x}" ]; then
-  echo '  debug = false' >> /etc/telegraf/telegraf.conf
-  echo '  quiet = true' >> /etc/telegraf/telegraf.conf
+  echo '  debug = false'
+  echo '  quiet = true'
 else
-  echo '  debug = true' >> /etc/telegraf/telegraf.conf
-  echo '  quiet = false' >> /etc/telegraf/telegraf.conf
+  echo '  debug = true'
+  echo '  quiet = false'
 fi
 
-cat << EOF >> /etc/telegraf/telegraf.conf
-  logfile = ""
-  hostname = ""
+echo """
+  logfile = \"\"
+  hostname = \"\"
   omit_hostname = true
 
 [[outputs.influxdb]]
-EOF
+"""
 
 # Add InfluxDB URL
-echo -n '  urls = ["' >> /etc/telegraf/telegraf.conf
-echo -n "${INFLUXDB_URL}" >> /etc/telegraf/telegraf.conf
-echo '"]' >> /etc/telegraf/telegraf.conf
+echo -n '  urls = ["'
+echo -n "${INFLUXDB_URL}"
+echo '"]'
 
 # InfluxDB database name
-echo -n '  database = "' >> /etc/telegraf/telegraf.conf
-echo -n "${INFLUXDB_DB}" >> /etc/telegraf/telegraf.conf
-echo '"' >> /etc/telegraf/telegraf.conf
+echo -n '  database = "'
+echo -n "${INFLUXDB_DB}"
+echo '"'
 
 # InfluxDB auth, if specified
 if [ -n "${INFLUXDB_USER+x}" ]; then
-  echo -n '  username = "' >> /etc/telegraf/telegraf.conf
-  echo -n "${INFLUXDB_USER}" >> /etc/telegraf/telegraf.conf
-  echo '"' >> /etc/telegraf/telegraf.conf
+  echo -n '  username = "'
+  echo -n "${INFLUXDB_USER}"
+  echo '"'
 fi
 if [ -n "${INFLUXDB_PASS+x}" ]; then
-  echo -n '  password = "' >> /etc/telegraf/telegraf.conf
-  echo -n "${INFLUXDB_PASS}" >> /etc/telegraf/telegraf.conf
-  echo '"' >> /etc/telegraf/telegraf.conf
+  echo -n '  password = "'
+  echo -n "${INFLUXDB_PASS}"
+  echo '"'
 fi
 
 # Finish config
-cat << EOF >> /etc/telegraf/telegraf.conf
+echo """
   skip_database_creation = false
-  timeout = "5s"
+  timeout = \"5s\"
 
 # Influx HTTP write listener
 [[inputs.influxdb_listener]]
-  service_address = ":8186"
-  read_timeout = "10s"
-  write_timeout = "10s"
-EOF
+  service_address = \":8186\"
+  read_timeout = \"10s\"
+  write_timeout = \"10s\"
+"""
+
+} > /etc/telegraf/telegraf.conf
