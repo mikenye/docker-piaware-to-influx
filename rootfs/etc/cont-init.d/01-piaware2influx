@@ -15,6 +15,9 @@ fi
 if [ -z "${VERBOSE_LOGGING+x}" ]; then
   VERBOSE_LOGGING=False
 fi
+if [ -z "${INFLUXDB_DB+x}" ]; then
+  INFLUXDB_DB="piaware"
+fi
 echo -ne "\e[0m"
 if [ $EXITCODE -ne 0 ]; then
   exit 1
@@ -61,13 +64,29 @@ cat << EOF >> /etc/telegraf/telegraf.conf
 EOF
 
 # Add InfluxDB URL
-echo -n 'urls = ["' >> /etc/telegraf/telegraf.conf
+echo -n '  urls = ["' >> /etc/telegraf/telegraf.conf
 echo -n "${INFLUXDB_URL}" >> /etc/telegraf/telegraf.conf
 echo '"]' >> /etc/telegraf/telegraf.conf
 
+# InfluxDB database name
+echo -n '  database = "' >> /etc/telegraf/telegraf.conf
+echo -n "${INFLUXDB_DB}" >> /etc/telegraf/telegraf.conf
+echo '"' >> /etc/telegraf/telegraf.conf
+
+# InfluxDB auth, if specified
+if [ -n "${INFLUXDB_USER+x}" ]; then
+  echo -n '  username = "' >> /etc/telegraf/telegraf.conf
+  echo -n "${INFLUXDB_USER}" >> /etc/telegraf/telegraf.conf
+  echo '"' >> /etc/telegraf/telegraf.conf
+fi
+if [ -n "${INFLUXDB_PASS+x}" ]; then
+  echo -n '  password = "' >> /etc/telegraf/telegraf.conf
+  echo -n "${INFLUXDB_PASS}" >> /etc/telegraf/telegraf.conf
+  echo '"' >> /etc/telegraf/telegraf.conf
+fi
+
 # Finish config
 cat << EOF >> /etc/telegraf/telegraf.conf
-  database = "piaware"
   skip_database_creation = false
   timeout = "5s"
 
