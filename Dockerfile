@@ -13,9 +13,9 @@ RUN set -x && \
       && \
     # Build telegraf
     git clone https://github.com/influxdata/telegraf.git /src/telegraf && \
-    cd /src/telegraf && \
+    pushd /src/telegraf && \
     BRANCH_TELEGRAF=$(git tag --sort="-creatordate" | head -1) && \
-    git checkout tags/${BRANCH_TELEGRAF} && \
+    git checkout tags/"${BRANCH_TELEGRAF}" && \
     make
 
 FROM debian:stable-slim AS final
@@ -41,7 +41,7 @@ RUN set -x && \
       python3 \
       python3-pip \
       && \
-	  pip3 install \
+	  pip3 install --no-cache-dir \
       python-dateutil \
       requests \
       && \
