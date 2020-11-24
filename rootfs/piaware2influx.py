@@ -14,6 +14,8 @@ import argparse
 import requests
 import inspect
 import dateutil.tz
+import threading
+import queue
 
 
 class ADSB_Processor():
@@ -48,7 +50,7 @@ class ADSB_Processor():
         telegraf_url (str): URL of Telegraf's inputs.http_listener
         verbose_logging (bool): Enable verbose logging
         """
-        self.buffer = str()
+        self.buffer = bytearray()
         self.database = {}
         self.messages_processed = 0
         self.points_sent = 0
@@ -56,6 +58,19 @@ class ADSB_Processor():
         self.verbose_logging = verbose_logging
         self.tz = dateutil.tz.gettz()
         self._clear_buffer()
+
+        # Start the Telegraf writer
+        self.write_q = queue.Queue()
+        self.write_thread = threading.Thread(target=self.write_loop)
+        self.write_thread.setDaemon(True)
+        self.write_thread.start()
+
+    def write_loop(self):
+        while True:
+            item = self.write_q.get()
+            if item is None:
+                break
+            self.send_line_protocol(item)
 
     def send_line_protocol(self, line_protocol):
         """
@@ -143,7 +158,7 @@ class ADSB_Processor():
             self.log(logtext)
 
     def _clear_buffer(self):
-        self.buffer = str()
+        self.buffer[:] = b''
 
     def add_data_to_buffer(self, datareceived):
         """
@@ -152,7 +167,7 @@ class ADSB_Processor():
         Parameters:
         datareceived (str): raw data received
         """
-        self.buffer = self.buffer + datareceived
+        self.buffer.extend(datareceived)
         self.process_buffer()
 
     def process_buffer(self):
@@ -162,42 +177,25 @@ class ADSB_Processor():
         Checks to see if a full ADSB message has been received.
         If so, process it.
         """
-        new_message = str()
-        last_two = "  "
-        count = 0
 
         # Read buffer up to end of message.
         # If any data is left in the buffer, leave it there
         #   so when we receive the remainder of the data we can
         #   assemble the message.
-        for character_received in self.buffer:
-            if character_received not in ("\r", "\n"):
-                new_message += character_received
-
-            # maintain a record of the last two chars
-            # used to detect end of message '\r\n'
-            last_two += character_received
-            last_two = last_two[1:]
-
-            # count number of characters read, so we can
-            #   remove this many chars from the start of
-            #   the buffer.
-            count += 1
-
-            # if we get to an end of message, then we process
-            #   the message, and reset our counters & stuff
-            if last_two == '\r\n':
+        while len(self.buffer):
+            newline_pos = self.buffer.find(b'\r\n')
+            if newline_pos >= 0:
                 if self.verbose_logging:
                     self.log("========== START PROCESSING MESSAGE ==========")
                 self.current_message_datetime = None
-                self.process_message(new_message)
+                self.process_message(self.buffer[:newline_pos].decode('UTF-8'))
                 self.current_message_datetime = None
                 if self.verbose_logging:
                     self.log("========== FINISH PROCESSING MESSAGE ==========")
-                self.buffer = self.buffer[count:]
+                del self.buffer[:newline_pos + 2]
                 self.messages_processed += 1
-                count = 0
-                new_message = ""
+            else:
+                break
 
     def clean_database(self, minutes_inactivity=15):
         """
@@ -627,7 +625,7 @@ class ADSB_Processor():
 
                 # send line protocol
                 if valid:
-                    self.send_line_protocol(line_protocol)
+                    self.write_q.put(line_protocol)
 
             # remove entries we've already sent
             self.database[message[4]]['data_to_send'] = list()
@@ -830,8 +828,8 @@ if __name__ == "__main__":
     while True:
         try:
             data = s.recv(1024)
-            s.send(bytes("\r\n", "UTF-8"))
-            D.add_data_to_buffer(data.decode("utf-8"))
+            #s.send(bytes("\r\n", "UTF-8"))
+            D.add_data_to_buffer(data)
         except socket.timeout:
             # print("TIMEOUT!")
             pass
